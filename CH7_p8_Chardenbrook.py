@@ -50,7 +50,7 @@ def sepia(image):
             else:
                 red= min(int(red * 1.08),225)
                 blue= int(blue * 0.93)
-    
+            image.setPixel(x,y,(red,green,blue))
     return image
 
 
