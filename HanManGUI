@@ -1,0 +1,131 @@
+from breezypythongui import EasyFrame
+
+import random
+
+class HangMan(EasyFrame):
+    def __init__(self):
+        EasyFrame.__init__(self, title = "Hang Man")
+        self.Dictionary = {"Title":"Hangman","description": """Description
+A man is about to be hung, and you need to save him before he dies.
+How the game works is are trying to guess a word letter by letter.If you get the letter right it's a clue into what the word is,
+if you get it wrong a body part is added to the hangman""",
+             "instructions": """Instructions
+In this game you are trying to guess a word. Enter letters that you think might be in the word,
+the program will show you if they are there.If you guess 6 incorrectly the game will stop.
+Once you have entered enough letter that you think you know what it is, guess the word.""",
+             "word right": "You guessed the word!! Congrats! You're one smart cookie.",
+             "word wrong":"Try guessing more letters, you haven't guessed the right word yet.",
+             "wrong letter": "try again",
+             "right letter":"Congradulations!! You guessed correctly!",
+              "fail":"Oh No!! You lost. Please play again."}
+        title = "Hangman"
+        self.titleLabel = self.addLabel(text = title, row = 0, column = 0,
+                                        sticky = "NSEW")
+        Description = self.Dictionary["description"]
+        
+        self.descpritionLabel = self.addLabel(text = Description, row = 1, column = 0,
+                                              sticky = "NSEW")
+        Instructions = self.Dictionary["instructions"]
+
+        self.instructionsLabel = self.addLabel(text = Instructions, row = 2, column = 0,
+                                               sticky = "NSEW")
+
+        Comment = """Please enter 'description' for the description of the game,
+'instructions' for how to play the game, a letter, the word, or quite if you want to leave:"""
+        self.commentLabel = self.addLabel(text = Comment, row = 3, column = 0,
+                                          sticky = "NSEW")
+
+        self.answerLabel = self.addLabel(text = "", row =4, column = 0)
+
+        self.wordLabel = self.addLabel(text = "Please enter your guess", row = 5, column =0,
+                                       sticky = "NSEW")
+        self.guess = self.addTextField(text = "",row = 5, column = 1)
+
+        self.lisLabel = self.addLabel(text="", row=4, column =1)
+
+        self.infoLabel = self.addLabel(text = "", row = 4, column = 2)
+        
+        self.checkButton = self.addButton(text = "check", row = 6,
+                                            column = 0, command = self.hang_man)
+        self.resetButton = self.addButton(text = "reset", row = 6,
+                                            column = 1, command =self.reset)
+
+        self.reset()
+    def reset(self):
+        self.answerLabel ["text"] = "Start the game again"
+        hangman=["slay","happiness", "queen", "boss", "sunflower", "sunshine", "tea", "twentyfourcarrotgold","peace","home","beehives","tomorrow","time","mississippi", "heaven", "awoken", "daisy", "dandilion", "depression","soft"]
+        #random.choice is important to choice a word from the list(peach is the variable it's set to)
+        self.peach=random.choice(hangman)
+        #creates a list for letter guesses
+        self.GuessLetter=[]
+        #creates a list for word guesses
+        self.GuessWord=[]
+        #The user gets to guess 6 wrong times before the hangman is created
+        self.fail=6
+        #This is for showing placement of letters during the game
+        self.wordcount="_"*len(self.peach)
+        
+        self.infoLabel["text"]= "There are",len(self.peach),"letters in this word."
+        print (self.peach)
+
+    def hang_man(self):
+        #input can be a word, a letter, a menu, or quite
+        guesses= self.guess.getText()
+        #In the actual hangman, it isn't enough to guess all the letters, you also need to guess the word. I created that element in this game too
+        if len(guesses) == len(self.peach) and guesses.isalpha():
+            if guesses==self.peach:
+                self.GuessWord.append(guesses)
+                self.lisLabel ["text"] = " ".join(self.GuessWord)
+                self.answerLabel ["text"] =  self.Dictionary["word right"]
+     
+        #If the guess for the word is wrong 
+            elif guesses!=self.peach:
+                self.GuessWord.append(guesses)
+                self.lisLabel ["text"] = " ".join(self.GuessWord)
+                self.answerLabel ["text"] =  self.Dictionary["word wrong"]
+
+            else:
+                self.answerLabel ["text"] ="Remeber the length of the word is",len(self.peach),
+                "if you are guessing a word long than that it won't accept it."
+        #correct guess for letter
+        elif (len(guesses)==1) and guesses.isalpha():
+            #"len guesses==1" has to do with the player only entering one letter(this is so if they enter the word the previous happens instead)
+            #append the guess to the list (guesses is because we don't know what we are appending yet)
+            if guesses in self.GuessLetter:
+                self.answerLabel ["text"] = "you have already tried", guesses, "!"
+                #makes sure they only get 6 guesses
+            elif guesses not in self.peach:
+                self.fail-=1
+                if self.fail==0:
+                    self.answerLabel ["text"]=self.Dictionary["fail"]
+                crazy=self.fail
+                self.GuessLetter.append(guesses)
+                self.lisLabel ["text"] = " ".join(self.GuessLetter)
+                self.answerLabel ["text"]=self.Dictionary["wrong letter"]
+                
+
+
+            else:
+                self.GuessLetter.append(guesses)
+                #Shows what you have already guessed 
+                print(self.GuessLetter)
+                #Congrats message
+                self.answerLabel ["text"]=self.Dictionary["right letter"]
+                hangman=list(self.wordcount)
+                indices = [i for i, letter in enumerate(self.peach) if letter == guesses]
+                for index in indices:
+                      hangman[index]=guesses
+                wordcount = "".join(hangman)
+                    
+
+        elif len(guesses) != len(self.peach) and guesses.isalpha():
+            self.answerLabel ["text"]="Remember that the length of the word is,",len(self.peach),
+            "if you guess a word with less or more letters, it won't accept it."
+        
+
+        
+        
+def main():
+    HangMan().mainloop()
+
+main()
